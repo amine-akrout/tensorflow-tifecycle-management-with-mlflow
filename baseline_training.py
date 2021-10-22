@@ -26,7 +26,8 @@ model.summary()
 
 num_epochs = NUM_EPOCH
 if __name__=='__main__':
-    log_dir = "logs/fit/" + datetime.datetime.now().strftime("%d%m%y-%H_%M_%S")
+    model_name = 'baseline'
+    log_dir = "logs/fit/{}-".format(model_name) + datetime.datetime.now().strftime("%d%m%y-%H_%M_%S")
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     history = model.fit(train_padded, y_train, epochs=num_epochs, validation_data=(test_padded, y_test), verbose=1, callbacks=[tensorboard])
 

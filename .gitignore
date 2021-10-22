@@ -137,3 +137,4 @@ logs/fit/*
 
 # MlFlow logs
 mlruns/*
+mlflow/mlruns/*

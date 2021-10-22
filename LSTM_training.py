@@ -31,7 +31,8 @@ test_labels = np.array(y_test)
 num_epochs = NUM_EPOCH
 
 if __name__=='__main__':
-    log_dir = "logs/fit/" + datetime.datetime.now().strftime("%d%m%y-%H_%M_%S")
+    model_name = 'LSTM'
+    log_dir = "logs/fit/{}-".format(model_name) + datetime.datetime.now().strftime("%d%m%y-%H_%M_%S")
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
     history = model.fit(train_padded, train_labels, epochs=num_epochs, validation_data=(test_padded, test_labels), verbose=1, callbacks=[tensorboard])

@@ -9,7 +9,7 @@ import tensorflow as tf
 import pandas as pd
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-
+import os
 from sklearn.model_selection import train_test_split
 
 ### mlflow configs
@@ -18,7 +18,7 @@ import mlflow.tensorflow
 from mlflow import pyfunc
 # Setup Experiment Tracker
 #registry_uri = 'sqlite:///mlflow.db'
-registry_uri = './mlruns'
+registry_uri = os.path.expandvars('mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}')
 mlflow.tracking.set_registry_uri(registry_uri)
 
 tracking_uri = 'http://localhost:5000'

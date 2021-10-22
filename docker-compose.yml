@@ -33,7 +33,7 @@ services:
     ports:
       - '5000:5000'
     volumes:
-      - './mlruns:/mlruns'
+      - './mlflow/mlruns:/mlruns'
     depends_on:
       - mysql
     command: >-

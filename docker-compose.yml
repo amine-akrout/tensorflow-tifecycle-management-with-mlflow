@@ -13,6 +13,8 @@ services:
       - 'MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}'
     volumes:
       - 'mysql-volume:/var/lib/mysql'
+    networks:
+      - backend
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
@@ -25,20 +27,68 @@ services:
     restart: always
     ports:
       - '8081:80'
+    networks:
+      - backend
   mlflow:
     restart: always
     build: ./mlflow
     image: mlflow_server
     container_name: mlflow_server
+    networks:
+      - frontend
+      - backend
+    environment:
+      - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_ACCESS_KEY}
+      - MLFLOW_S3_ENDPOINT_URL=http://s3:${MINIO_PORT}
     ports:
       - '5000:5000'
-    volumes:
-      - './mlflow/mlruns:/mlruns'
     depends_on:
       - mysql
-    command: >-
-      --backend-store-uri
-      mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
-      --default-artifact-root ./mlruns --host 0.0.0.0
+    command: >
+      mlflow server 
+      --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE} 
+      --default-artifact-root s3://${MLFLOW_BUCKET_NAME}/ 
+      --host 0.0.0.0
+  s3:
+    image: minio/minio:RELEASE.2021-06-14T01-29-23Z
+    container_name: s3
+    volumes:
+      - minio_data:/data
+    ports:
+      - "${MINIO_PORT}:9000"
+    networks:
+      - backend
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_ACCESS_KEY}
+    command: server /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+  create_buckets:
+    image: minio/mc
+    container_name: minio_client
+    depends_on:
+      - s3
+    networks:
+      - backend
+    entrypoint: >
+      /bin/sh -c '
+      sleep 5;
+      /usr/bin/mc config host add s3 http://s3:${MINIO_PORT} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_ACCESS_KEY} --api S3v4;
+      [[ ! -z "`/usr/bin/mc ls s3 | grep challenge`" ]] || /usr/bin/mc mb s3/${MLFLOW_BUCKET_NAME};
+      /usr/bin/mc policy download s3/${MLFLOW_BUCKET_NAME};
+      exit 0;
+      '
 volumes:
-  mysql-volume: null
+  mysql-volume:
+  minio_data:
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge

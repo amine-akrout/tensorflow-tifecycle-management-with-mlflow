@@ -18,17 +18,17 @@ import mlflow.tensorflow
 from mlflow import pyfunc
 # Setup Experiment Tracker
 #registry_uri = 'sqlite:///mlflow.db'
-registry_uri = os.path.expandvars('mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}')
-mlflow.tracking.set_registry_uri(registry_uri)
+#registry_uri = os.path.expandvars('mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}')
+#registry_uri = './mlflow/mlruns'
+#mlflow.tracking.set_registry_uri(registry_uri)
 
-tracking_uri = 'http://localhost:5000'
-mlflow.tracking.set_tracking_uri(tracking_uri)
+#tracking_uri = 'http://localhost:5000'
+#mlflow.tracking.set_tracking_uri(tracking_uri)
 
 experiment_name = 'Reviews_Classification'
 mlflow.set_experiment(experiment_name)
 
 mlflow.tensorflow.autolog()
-
 
 
 # parms

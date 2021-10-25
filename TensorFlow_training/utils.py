@@ -12,18 +12,16 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 import os
 from sklearn.model_selection import train_test_split
 
-### mlflow configs
-import mlflow
 import mlflow.tensorflow
-from mlflow import pyfunc
-# Setup Experiment Tracker
-#registry_uri = 'sqlite:///mlflow.db'
-#registry_uri = os.path.expandvars('mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}')
-#registry_uri = './mlflow/mlruns'
-#mlflow.tracking.set_registry_uri(registry_uri)
 
-#tracking_uri = 'http://localhost:5000'
-#mlflow.tracking.set_tracking_uri(tracking_uri)
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
+import warnings
+
+from tensorflow.keras.callbacks import EarlyStopping
+
+
 
 experiment_name = 'Reviews_Classification'
 mlflow.set_experiment(experiment_name)
@@ -37,7 +35,7 @@ MAX_LEN = 120
 TRUNC_TYPE = 'post'
 PADDING_TYPE = 'post'
 OOV_TOK = "<OOV>"
-NUM_EPOCH = 10
+NUM_EPOCH = 20
 
 # Import Data
 
@@ -78,8 +76,6 @@ METRICS = [tf.keras.metrics.BinaryAccuracy(name='accuracy'),
 debug = True
 
 if debug == True:
-    from dotenv import load_dotenv, find_dotenv
-    load_dotenv(find_dotenv())
     print(os.path.expandvars('${MLFLOW_TRACKING_URI}'))
     print(os.path.expandvars('${MLFLOW_ARTIFACT_URI}'))
     print(os.path.expandvars('${AWS_ACCESS_KEY_ID}'))

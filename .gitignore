@@ -133,7 +133,12 @@ dmypy.json
 
 # tensboard logs
 logs/fit/*
+TensorFlow_training/logs/fit/*
 
 # MlFlow logs
 mlruns/*
 mlflow/mlruns/*
+TensorFlow_training/mlruns/*
+
+# saved models
+TensorFlow_training/tmp/*

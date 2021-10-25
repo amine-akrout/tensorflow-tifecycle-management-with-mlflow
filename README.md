@@ -1,7 +1,5 @@
 # Tensorflow models LifeCycle managemenet [![Actions Status](https://github.com/amine-akrout/Tensorflow-Lifecycle-management-with-MLFlow/workflows/VerifyDockerCompose/badge.svg)](https://github.com/amine-akrout/Tensorflow-Lifecycle-management-with-MLFlow/actions)
 
-Creating a Dockerized stack environment using MLflow, mysql and Minio to manage the lifecycle of TensorFlow models.
-
 This repository contains a docker-compose stack with MLflow, mysql, phpmyadmin and Minio. The networking is set up so running containers could communicate.
 
 ## Quickstart

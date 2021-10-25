@@ -16,7 +16,7 @@ cd Tensorflow-Lifecycle-management-with-MLFlow
 This will clone the repo
 
 ```
-pip install virtualenv  # ()
+pip install virtualenv
 ```
 if you don't already have virtualenv installed
 virtualenv venv to create your new environment (called 'venv' here)

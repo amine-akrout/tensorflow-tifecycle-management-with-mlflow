@@ -42,7 +42,7 @@ docker-compose up -d
 ```
 after this, you have all container running so you can start training ML models
 
-<img height="" src="C:\Users\yomke\Desktop\DS\portfolio_DS\MlFlow-Tensorflow-nlp\demo\docker_stack.JPG" width="300"/>
+<img height="" src="https://github.com/amine-akrout/Tensorflow-Lifecycle-management-with-MLFlow/blob/main/demo/docker_stack.JPG" width="300"/>
 
 
 #### Detail Summary
@@ -94,19 +94,19 @@ the open it in the browser http://localhost:6000
 <tr>
 <td style="width: 50%">
 <h3>MLflow UI</h3>
-<img src="C:\Users\yomke\Desktop\DS\portfolio_DS\MlFlow-Tensorflow-nlp\demo\mlflow.JPG" alt="">
+<img src="https://github.com/amine-akrout/Tensorflow-Lifecycle-management-with-MLFlow/blob/main/demo/mlflow.JPG" alt="">
 </td>
 <td>
 <h3>Mysql database in phpmyadmin</h3>
-<img src="C:\Users\yomke\Desktop\DS\portfolio_DS\MlFlow-Tensorflow-nlp\demo\mysql.JPG" alt="">
+<img src="https://github.com/amine-akrout/Tensorflow-Lifecycle-management-with-MLFlow/blob/main/demo/mysql.JPG" alt="">
 </td>
 </tr>
 <td style="width: 50%">
 <h3>Models artifacts in Minio</h3>
-<img src="C:\Users\yomke\Desktop\DS\portfolio_DS\MlFlow-Tensorflow-nlp\demo\minio.JPG" alt="">
+<img src="https://github.com/amine-akrout/Tensorflow-Lifecycle-management-with-MLFlow/blob/main/demo/minio.JPG" alt="">
 </td>
 <td style="width: 50%">
 <h3>tensorboard visualization</h3>
-<img src="C:\Users\yomke\Desktop\DS\portfolio_DS\MlFlow-Tensorflow-nlp\demo\tensorboard.JPG" alt="">
+<img src="https://github.com/amine-akrout/Tensorflow-Lifecycle-management-with-MLFlow/blob/main/demo/tensorboard.JPG" alt="">
 </td>
 </table>

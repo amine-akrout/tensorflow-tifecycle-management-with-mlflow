@@ -1,0 +1,13 @@
+version: '3.2'
+services:
+  tf_serving:
+    ports:
+      - '8501:8501'
+    container_name: reviews_prediction
+    environment:
+      - MODEL_NAME=reviews_preds
+    image: tensorflow/serving
+    volumes:
+      - type: bind
+        source: ./tmp/swivel
+        target: /models/reviews_preds/1

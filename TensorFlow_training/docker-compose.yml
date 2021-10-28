@@ -11,3 +11,20 @@ services:
       - type: bind
         source: ./tmp/swivel
         target: /models/reviews_preds/1
+    networks:
+      - app
+  streamlit:
+    build: ./app
+    ports:
+      - '9000:9000'
+    container_name: streamlit_ui
+    volumes:
+      - './app:/app'
+    depends_on:
+      - tf_serving
+    command: streamlit run app.py --server.port=9000 --browser.serverAddress=0.0.0.0
+    networks:
+      - app
+networks:
+  app:
+    driver: bridge

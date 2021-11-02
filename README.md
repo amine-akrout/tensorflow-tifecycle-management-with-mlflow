@@ -108,3 +108,7 @@ the open it in the browser http://localhost:6000
 <img src="https://github.com/amine-akrout/Tensorflow-Lifecycle-management-with-MLFlow/blob/main/demo/tensorboard.JPG" alt="">
 </td>
 </table>
+
+
+## Web app demo
+demo![](https://github.com/amine-akrout/Tensorflow-Lifecycle-management-with-MLFlow/blob/main/demo/app_demo.png)

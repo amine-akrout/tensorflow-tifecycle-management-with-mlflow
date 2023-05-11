@@ -1,7 +1,7 @@
 """
 Trains and evaluate a Baseline Model.
 """
-# pylint: disable=E0401, C0103
+# pylint: disable=E0401, C0103, E1120
 import datetime
 
 import mlflow
@@ -11,6 +11,9 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 from sklearn.model_selection import train_test_split
 import pandas as pd
+import warnings
+
+warnings.filterwarnings("ignore")
 
 # import shutil
 

@@ -12,9 +12,6 @@ import mlflow
 # pylint: disable=E0401, C0103, E1120
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.callbacks import EarlyStopping, TensorBoard
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.preprocessing.text import Tokenizer
 
 warnings.filterwarnings("ignore")
 
@@ -60,14 +57,16 @@ def preprocess_text(X_train, X_test, vocab_size, oov_tok, padding_type, max_leng
         tuple: Tuple of preprocessed training and test data
     """
 
-    tokenizer = Tokenizer(num_words=vocab_size, oov_token=oov_tok)
+    tokenizer = tf.keras.preprocessing.text.Tokenizer(num_words=vocab_size, oov_token=oov_tok)
     tokenizer.fit_on_texts(X_train)
     train_sequences = tokenizer.texts_to_sequences(X_train)
-    train_padded = pad_sequences(
+    train_padded = tf.keras.preprocessing.text.sequence.pad_sequences(
         train_sequences, padding=padding_type, maxlen=max_length
     )
     test_sequences = tokenizer.texts_to_sequences(X_test)
-    test_padded = pad_sequences(test_sequences, padding=padding_type, maxlen=max_length)
+    test_padded = tf.keras.preprocessing.text.sequence.pad_sequences(
+        test_sequences, padding=padding_type, maxlen=max_length
+        )
     return train_padded, test_padded
 
 
@@ -120,8 +119,8 @@ def train_model(
     log_dir = "logs/fit/{}-".format(model_name) + datetime.datetime.now().strftime(
         "%d%m%y-%H_%M_%S"
     )
-    tensorboard = TensorBoard(log_dir=log_dir, histogram_freq=1)
-    es = EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=3)
+    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+    es = tf.keras.callbacks.EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=3)
     with mlflow.start_run(run_name=model_name) as run:
         _ = model.fit(
             train_padded,

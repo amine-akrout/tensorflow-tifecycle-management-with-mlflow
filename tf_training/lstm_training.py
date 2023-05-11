@@ -127,7 +127,7 @@ def train_model(model, train_padded, test_padded, y_train, y_test, num_epochs):
         )
         model.save("./tmp/{}".format(model_name))
         mlflow.tensorflow.log_model(model, artifact_path="saved_model")
-        tf.keras.backend.clear_session()
+    tf.keras.backend.clear_session()
 
 
 def main():

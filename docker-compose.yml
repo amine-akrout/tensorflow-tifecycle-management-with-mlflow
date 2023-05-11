@@ -51,20 +51,19 @@ services:
       --default-artifact-root s3://${MLFLOW_BUCKET_NAME}/ 
       --host 0.0.0.0
   s3:
-    image: minio/minio:RELEASE.2021-06-14T01-29-23Z
+    image: minio/minio:latest
     container_name: s3
     volumes:
-      - type: volume
-        source: minio_data
-        target: /data
+      - ./data/minio-data:/data
     ports:
       - "${MINIO_PORT}:9000"
+      - "9001:9001"
     networks:
       - backend
     environment:
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_ACCESS_KEY}
-    command: server /data
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_ACCESS_KEY}
+    command: server /data --console-address ':9001'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s

@@ -108,6 +108,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.env
 
 # Spyder project settings
 .spyderproject
@@ -133,12 +134,16 @@ dmypy.json
 
 # tensboard logs
 logs/fit/*
-TensorFlow_training/logs/fit/*
+tf_training/logs/fit/*
 
 # MlFlow logs
 mlruns/*
 mlflow/mlruns/*
-TensorFlow_training/mlruns/*
+tf_training/mlruns/*
 
 # saved models
-TensorFlow_training/tmp/*
+tf_training/tmp/*
+
+# data
+data/*
+tf_training/data/*

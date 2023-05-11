@@ -10,40 +10,15 @@ import pandas as pd
 import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text as text
-from sklearn.model_selection import train_test_split
+from utils import import_data, split_data
+
 
 warnings.filterwarnings("ignore")
 
 # pylint: disable=E0401, C0103, E1120
 
-# Import Data
-def import_data():
-    """
-    Import data from csv file
-
-    Returns:
-        tuple: Tuple of training and test data
-    """
-    data = pd.read_csv("./data/tripadvisor_hotel_reviews.csv")
-    groups = []
-    for rating in data["Rating"]:
-        if rating in [1, 2, 3]:
-            groups.append(0)
-        else:
-            groups.append(1)
-    data["sentiment"] = groups
-    X_train, X_test, y_train, y_test = train_test_split(
-        data["Review"],
-        data["sentiment"],
-        test_size=0.2,
-        random_state=123,
-        stratify=data["sentiment"],
-    )
-    return X_train, X_test, y_train, y_test
-
 
 # Create Model using gnews-swivel-20dim
-
 
 def create_model(hub_layer, metrics):
     """
@@ -116,8 +91,8 @@ def main():
         tf.keras.metrics.Recall(name="recall"),
         tf.keras.metrics.AUC(name="auc"),
     ]
-
-    X_train, X_test, y_train, y_test = import_data()
+    data = import_data()
+    X_train, X_test, y_train, y_test = split_data(data)
     hub_layer = hub.KerasLayer(
         "https://tfhub.dev/google/tf2-preview/gnews-swivel-20dim-with-oov/1",
         output_shape=[20],

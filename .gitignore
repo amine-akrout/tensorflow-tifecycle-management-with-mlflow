@@ -143,6 +143,7 @@ tf_training/mlruns/*
 
 # saved models
 tf_training/tmp/*
+tf_serving/tmp/*
 
 # data
 data/*

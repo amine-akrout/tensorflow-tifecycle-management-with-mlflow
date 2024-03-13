@@ -1,15 +1,15 @@
-version: '3.2'
+version: "3.2"
 services:
   tf_serving:
     ports:
-      - '8501:8501'
+      - "8501:8501"
     container_name: reviews_prediction
     environment:
       - MODEL_NAME=reviews_preds
     image: tensorflow/serving
     volumes:
       - type: bind
-        source: ./tmp/swivel
+        source: ./tmp/best_model/model/data/model
         target: /models/reviews_preds/1
     networks:
       - app
@@ -17,10 +17,10 @@ services:
     build: ./app
     image: 3aak/streamlit
     ports:
-      - '9000:9000'
+      - "9000:9000"
     container_name: streamlit_ui
     volumes:
-      - './app:/app'
+      - "./app:/app"
     depends_on:
       - tf_serving
     command: streamlit run app.py --server.port=9000 --browser.serverAddress=0.0.0.0
@@ -28,5 +28,4 @@ services:
       - app
 networks:
   app:
-    external:
-      name: app
+    driver: bridge

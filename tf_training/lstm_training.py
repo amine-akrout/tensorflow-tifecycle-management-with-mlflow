@@ -63,9 +63,7 @@ def run_lstm():
     train_padded = np.array(train_padded)
     test_padded = np.array(test_padded)
     model = create_lstm_model(vocab_size, embedding_dim, max_len, metrics)
-    train_model(
-        "baseline", model, train_padded, y_train, test_padded, y_test, num_epoch
-    )
+    train_model("lstm", model, train_padded, y_train, test_padded, y_test, num_epoch)
 
 
 if __name__ == "__main__":

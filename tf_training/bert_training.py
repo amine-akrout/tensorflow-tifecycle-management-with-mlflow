@@ -5,40 +5,14 @@ Trains and evaluate a bert Model.
 import datetime
 import warnings
 
-import pandas as pd
 import tensorflow as tf
 import tensorflow_hub as hub
-from sklearn.model_selection import train_test_split
+import tensorflow_text as text
+from utils import import_data, split_data
 
 import mlflow
 
 warnings.filterwarnings("ignore")
-
-
-# Import Data
-def import_data():
-    """
-    Import data from csv file
-
-    Returns:
-        tuple: Tuple of training and test data
-    """
-    data = pd.read_csv("./data/tripadvisor_hotel_reviews.csv")
-    groups = []
-    for rating in data["Rating"]:
-        if rating in [1, 2, 3]:
-            groups.append(0)
-        else:
-            groups.append(1)
-    data["sentiment"] = groups
-    x_train, x_test, y_train, y_test = train_test_split(
-        data["Review"],
-        data["sentiment"],
-        test_size=0.2,
-        random_state=123,
-        stratify=data["sentiment"],
-    )
-    return x_train, x_test, y_train, y_test
 
 
 # define model
@@ -117,7 +91,8 @@ def run_bert():
         tf.keras.metrics.AUC(name="auc"),
     ]
 
-    x_train, x_test, y_train, y_test = import_data()
+    data = import_data()
+    x_train, x_test, y_train, y_test = split_data(data)
     # Create Bert Model
     # downloading preprocessing files and model
     bert_preprocessor = hub.KerasLayer(

@@ -1,14 +1,12 @@
 """
 Trains and evaluate a LSTM Model
 """
+
 import warnings
 
 import numpy as np
-
-# pylint: disable=E0401, C0103, E1120
 import tensorflow as tf
-from utils import import_data, split_data, preprocess_text, train_model
-
+from utils import import_data, preprocess_text, split_data, train_model
 
 warnings.filterwarnings("ignore")
 
@@ -58,14 +56,16 @@ def run_lstm():
         tf.keras.metrics.AUC(name="auc"),
     ]
     data = import_data()
-    X_train, X_test, y_train, y_test = split_data(data)
+    x_train, x_test, y_train, y_test = split_data(data)
     train_padded, test_padded = preprocess_text(
-        X_train, X_test, vocab_size, oov_tok, padding_type, max_len
+        x_train, x_test, vocab_size, oov_tok, padding_type, max_len
     )
     train_padded = np.array(train_padded)
     test_padded = np.array(test_padded)
     model = create_lstm_model(vocab_size, embedding_dim, max_len, metrics)
-    train_model("baseline", model, train_padded, y_train, test_padded, y_test, num_epoch)
+    train_model(
+        "baseline", model, train_padded, y_train, test_padded, y_test, num_epoch
+    )
 
 
 if __name__ == "__main__":

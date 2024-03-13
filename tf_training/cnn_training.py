@@ -3,15 +3,16 @@ Trains and evaluate a Baseline Model.
 """
 
 import warnings
+
 import numpy as np
-# pylint: disable=E0401, C0103, E1120
 import tensorflow as tf
-from utils import import_data, split_data, preprocess_text, train_model
+from utils import import_data, preprocess_text, split_data, train_model
 
 warnings.filterwarnings("ignore")
 
 
 # Create CNN model
+
 
 def create_cnn_model(vocab_size, embedding_dim, max_length, metrics):
     """
@@ -56,16 +57,18 @@ def run_cnn():
         tf.keras.metrics.AUC(name="auc"),
     ]
     data = import_data()
-    X_train, X_test, y_train, y_test = split_data(data)
+    x_train, x_test, y_train, y_test = split_data(data)
     train_padded, test_padded = preprocess_text(
-        X_train, X_test, vocab_size, oov_tok, padding_type, max_len
+        x_train, x_test, vocab_size, oov_tok, padding_type, max_len
     )
     train_padded = np.array(train_padded)
     train_labels = np.array(y_train)
     test_padded = np.array(test_padded)
     test_labels = np.array(y_test)
     model = create_cnn_model(vocab_size, embedding_dim, max_len, metrics)
-    train_model("cnn", model, train_padded, train_labels, test_padded, test_labels, num_epoch)
+    train_model(
+        "cnn", model, train_padded, train_labels, test_padded, test_labels, num_epoch
+    )
 
 
 if __name__ == "__main__":

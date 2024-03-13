@@ -1,10 +1,10 @@
 """
 Trains and evaluate a Baseline Model.
 """
-# pylint: disable=E0401, C0103, E1120
+
+import warnings
 
 import tensorflow as tf
-import warnings
 from utils import import_data, split_data, preprocess_text, train_model
 
 warnings.filterwarnings("ignore")
@@ -54,13 +54,16 @@ def run_baseline():
         tf.keras.metrics.AUC(name="auc"),
     ]
     data = import_data()
-    X_train, X_test, y_train, y_test = split_data(data)
+    x_train, x_test, y_train, y_test = split_data(data)
     train_padded, test_padded = preprocess_text(
-        X_train, X_test, vocab_size, oov_tok, padding_type, max_len
+        x_train, x_test, vocab_size, oov_tok, padding_type, max_len
     )
     model = create_mlp_model(vocab_size, embedding_dim, max_len, metrics)
     # train_model("baseline", model, train_padded, test_padded, y_train, y_test, num_epoch)
-    train_model("baseline", model, train_padded, y_train, test_padded, y_test, num_epoch)
+    train_model(
+        "baseline", model, train_padded, y_train, test_padded, y_test, num_epoch
+    )
+
 
 if __name__ == "__main__":
     run_baseline()

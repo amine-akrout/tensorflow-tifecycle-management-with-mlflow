@@ -1,19 +1,20 @@
-'''Trains and evaluate a simple MLP
+"""Trains and evaluate a simple MLP
 on the Reuters newswire topic classification task.
-'''
-import os
+"""
+
 import datetime
-import tensorflow as tf
+
 import mlflow.tensorflow
-from dotenv import find_dotenv, load_dotenv
-from mlflow.tracking import MlflowClient
-from sklearn.model_selection import train_test_split
-# from tensorflow.python.keras.utils import pad_sequences
 import pandas as pd
+import tensorflow as tf
+from dotenv import find_dotenv, load_dotenv
+from sklearn.model_selection import train_test_split
+
 load_dotenv(find_dotenv())
-experiment_name = 'Reviews_Classification'
-mlflow.set_experiment(experiment_name)
+EXPERIMENT = "Reviews_Classification"
+mlflow.set_experiment(EXPERIMENT)
 mlflow.tensorflow.autolog()
+
 
 def import_data():
     """
@@ -32,6 +33,7 @@ def import_data():
     data["sentiment"] = groups
     return data
 
+
 def split_data(data):
     """
     Split data into training and test data
@@ -42,22 +44,23 @@ def split_data(data):
     Returns:
         tuple: Tuple of training and test data
     """
-    X_train, X_test, y_train, y_test = train_test_split(
+    x_train, x_test, y_train, y_test = train_test_split(
         data["Review"],
         data["sentiment"],
         test_size=0.2,
         random_state=123,
         stratify=data["sentiment"],
     )
-    return X_train, X_test, y_train, y_test
+    return x_train, x_test, y_train, y_test
 
-def preprocess_text(X_train, X_test, vocab_size, oov_tok, padding_type, max_length):
+
+def preprocess_text(x_train, x_test, vocab_size, oov_tok, padding_type, max_length):
     """
     Preprocess text data for training
 
     Args:
-        X_train (list): Training data
-        X_test (list): Test data
+        x_train (list): Training data
+        x_test (list): Test data
         vocab_size (int): Size of vocabulary
         oov_tok (str): Out of vocabulary token
         padding_type (str): Padding type
@@ -66,16 +69,18 @@ def preprocess_text(X_train, X_test, vocab_size, oov_tok, padding_type, max_leng
     Returns:
         tuple: Tuple of preprocessed training and test data
     """
-    tokenizer = tf.keras.preprocessing.text.Tokenizer(num_words=vocab_size, oov_token=oov_tok)
-    tokenizer.fit_on_texts(X_train)
-    train_sequences = tokenizer.texts_to_sequences(X_train)
+    tokenizer = tf.keras.preprocessing.text.Tokenizer(
+        num_words=vocab_size, oov_token=oov_tok
+    )
+    tokenizer.fit_on_texts(x_train)
+    train_sequences = tokenizer.texts_to_sequences(x_train)
     train_padded = tf.keras.utils.pad_sequences(
         train_sequences, padding=padding_type, maxlen=max_length
     )
-    test_sequences = tokenizer.texts_to_sequences(X_test)
+    test_sequences = tokenizer.texts_to_sequences(x_test)
     test_padded = tf.keras.utils.pad_sequences(
         test_sequences, padding=padding_type, maxlen=max_length
-        )
+    )
     return train_padded, test_padded
 
 
@@ -98,51 +103,18 @@ def train_model(
         "%d%m%y-%H_%M_%S"
     )
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
-    es = tf.keras.callbacks.EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=3)
-    with mlflow.start_run(run_name=model_name) as run:
+    early_stop = tf.keras.callbacks.EarlyStopping(
+        monitor="val_loss", mode="min", verbose=1, patience=3
+    )
+    with mlflow.start_run(run_name=model_name):
         _ = model.fit(
             train_padded,
             train_labels,
             epochs=num_epochs,
             validation_data=(test_padded, test_labels),
             verbose=1,
-            callbacks=[tensorboard, es],
+            callbacks=[tensorboard, early_stop],
         )
         model.save("./tmp/{}".format(model_name))
         mlflow.tensorflow.log_model(model, artifact_path="saved_model")
-        # shutil.rmtree("./tmp")
     tf.keras.backend.clear_session()
-
-# debug = True
-# def debug_print(*args, **kwargs):
-#     if debug == True:
-#         print(os.path.expandvars('${MLFLOW_TRACKING_URI}'))
-#         print(os.path.expandvars('${MLFLOW_ARTIFACT_URI}'))
-#         print(os.path.expandvars('${AWS_ACCESS_KEY_ID}'))
-#         print(os.path.expandvars('${AWS_SECRET_ACCESS_KEY}'))
-#         print(os.path.expandvars('${MLFLOW_S3_ENDPOINT_URL}'))
-#         experiment_id = mlflow.set_experiment(experiment_name)
-
-#         experiment = mlflow.get_experiment(experiment_id)
-
-#         print("Name: {}".format(experiment.name))
-#         print("Experiment_id: {}".format(experiment.experiment_id))
-#         print("Artifact Location: {}".format(experiment.artifact_location))
-#         print("Tags: {}".format(experiment.tags))
-#         print("Lifecycle_stage: {}".format(experiment.lifecycle_stage))
-
-#         mr_uri = mlflow.get_registry_uri()
-#         print("Current model registry uri: {}".format(mr_uri))
-
-#         # Get the current tracking uri
-#         tracking_uri = mlflow.get_tracking_uri()
-#         print("Current tracking uri: {}".format(tracking_uri))
-
-#         def print_auto_logged_info(r):
-#             tags = {k: v for k, v in r.data.tags.items() if not k.startswith("mlflow.")}
-#             artifacts = [f.path for f in MlflowClient().list_artifacts(r.info.run_id, "model")]
-#             print("run_id: {}".format(r.info.run_id))
-#             print("artifacts: {}".format(artifacts))
-#             print("params: {}".format(r.data.params))
-#             print("metrics: {}".format(r.data.metrics))
-#             print("tags: {}".format(tags))

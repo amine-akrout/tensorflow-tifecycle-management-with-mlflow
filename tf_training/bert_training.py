@@ -5,16 +5,15 @@ Trains and evaluate a bert Model.
 import datetime
 import warnings
 
-import mlflow
 import pandas as pd
 import tensorflow as tf
 import tensorflow_hub as hub
-import tensorflow_text as text
 from sklearn.model_selection import train_test_split
+
+import mlflow
 
 warnings.filterwarnings("ignore")
 
-# pylint: disable=E0401, C0103, E1120
 
 # Import Data
 def import_data():
@@ -32,14 +31,14 @@ def import_data():
         else:
             groups.append(1)
     data["sentiment"] = groups
-    X_train, X_test, y_train, y_test = train_test_split(
+    x_train, x_test, y_train, y_test = train_test_split(
         data["Review"],
         data["sentiment"],
         test_size=0.2,
         random_state=123,
         stratify=data["sentiment"],
     )
-    return X_train, X_test, y_train, y_test
+    return x_train, x_test, y_train, y_test
 
 
 # define model
@@ -71,38 +70,42 @@ def create_model(bert_preprocessor, bert_encoder, metrics):
 
 # fit the model
 
-def train_model(model, X_train, y_train, X_test, y_test, num_epochs):
+
+def train_model(model, x_train, y_train, x_test, y_test, num_epochs):
     """
     Train the model and log metrics to mlflow
 
     Args:
         model (tf.keras.Model): Model to train
-        X_train (list): Training data
+        x_train (list): Training data
         y_train (list): Training labels
-        X_test (list): Test data
+        x_test (list): Test data
         y_test (list): Test labels
         num_epochs (int): Number of epochs
     """
+    # pylint: disable=E1120
     model_name = "Bert"
     log_dir = "logs/fit/{}-".format(model_name) + datetime.datetime.now().strftime(
         "%d%m%y-%H_%M_%S"
     )
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
-    es = tf.keras.callbacks.EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=3)
-    with mlflow.start_run(run_name=model_name) as run:
+    early_stop = tf.keras.callbacks.EarlyStopping(
+        monitor="val_loss", mode="min", verbose=1, patience=3
+    )
+    with mlflow.start_run(run_name=model_name):
         _ = model.fit(
-            X_train,
+            x_train,
             y_train,
-            validation_data=(X_test, y_test),
+            validation_data=(x_test, y_test),
             epochs=num_epochs,
-            callbacks=[tensorboard, es],
+            callbacks=[tensorboard, early_stop],
         )
         model.save("./tmp/{}".format(model_name))
         mlflow.tensorflow.log_model(model, artifact_path="saved_model")
     tf.keras.backend.clear_session()
 
 
-def main():
+def run_bert():
     """
     Main function
     """
@@ -114,7 +117,7 @@ def main():
         tf.keras.metrics.AUC(name="auc"),
     ]
 
-    X_train, X_test, y_train, y_test = import_data()
+    x_train, x_test, y_train, y_test = import_data()
     # Create Bert Model
     # downloading preprocessing files and model
     bert_preprocessor = hub.KerasLayer(
@@ -124,8 +127,8 @@ def main():
         "https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-2_H-128_A-2/2"
     )
     model = create_model(bert_preprocessor, bert_encoder, metrics)
-    train_model(model, X_train, y_train, X_test, y_test, num_epoch)
+    train_model(model, x_train, y_train, x_test, y_test, num_epoch)
 
 
 if __name__ == "__main__":
-    main()
+    run_bert()

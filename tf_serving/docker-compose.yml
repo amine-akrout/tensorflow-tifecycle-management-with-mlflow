@@ -17,13 +17,13 @@ services:
     build: ./app
     image: 3aak/streamlit
     ports:
-      - "9000:9000"
+      - "7000:7000"
     container_name: streamlit_ui
     volumes:
       - "./app:/app"
     depends_on:
       - tf_serving
-    command: streamlit run app.py --server.port=9000 --browser.serverAddress=0.0.0.0
+    command: streamlit run app.py --server.port=7000 --browser.serverAddress=0.0.0.0
     networks:
       - app
 networks:
